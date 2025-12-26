@@ -17,14 +17,14 @@ namespace LoveShop.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetProductsAsync(int pageNumber = 0, int pageSize = 20)
+        public async Task<ActionResult<IEnumerable<Product>>> GetProductsAsync(int pageNumber = 0, int pageSize = 20)
         {
             var products = await _productService.GetProductsAsync(pageNumber, pageSize);
             return Ok(products);
         }
 
         [HttpGet("{id:guid}")]
-        public async Task<IActionResult> GetProductByIdAsync(Guid id)
+        public async Task<ActionResult<Product>> GetProductByIdAsync(Guid id)
         {
             var product = await _productService.GetProductAsync(x => x.Id == id);
 
@@ -32,7 +32,7 @@ namespace LoveShop.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateProductAsync([FromBody] ProductCreateDTO productDTO)
+        public async Task<ActionResult> CreateProductAsync([FromBody] ProductCreateDTO productDTO)
         {
             var product = productDTO.ToProduct();
             await _productService.CreateProductAsync(product);
