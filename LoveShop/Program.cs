@@ -10,16 +10,8 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddScoped<ProductService, ProductService>();
 
-string? host = builder.Configuration["POSTGRES_HOST"];
-string? port = builder.Configuration["POSTGRES_PORT"];
-string? db = builder.Configuration["POSTGRES_DB"];
-string? user = builder.Configuration["POSTGRES_USER"];
-string? password = builder.Configuration["POSTGRES_PASSWORD"];
-
-string connectionString = $"Host={host};Port={port};Database={db};User={user};Password={password}";
-
 builder.Services.AddDbContext<LoveShopDbContext>(opt =>
-    opt.UseNpgsql(connectionString));
+    opt.UseNpgsql(builder.Configuration.GetConnectionString("Database")));
 
 var app = builder.Build();
 
