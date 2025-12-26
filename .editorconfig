@@ -6,6 +6,8 @@ root = true
 
 #### Core EditorConfig Options ####
 
+trim_trailing_whitespace = true
+
 # Indentation and spacing
 indent_size = 4
 indent_style = space
