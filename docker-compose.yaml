@@ -1,0 +1,77 @@
+﻿services:
+  loveShopAPI:
+    image: love_shop_api
+    build:
+      context: .
+      dockerfile: LoveShop/Dockerfile
+    ports:
+      - ${API_PORT}:8080
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: postgres_container
+    environment:
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - ${POSTGRES_PORT}:5432
+    volumes:
+      - /2. Init Database:/docker-entrypoint-initdb.d
+      - pg-data:/var/lib/postgresql/data
+    deploy:
+      resources:
+        limits:
+          cpus: 1
+          memory: 1G
+    command: >
+      postgres -c max_connections=50
+               -c shared_buffers=1GB
+               -c effective_cache_size=2GB
+               -c work_mem=16MB
+               -c maintenance_work_mem=512MB
+               -c checkpoint_completion_target=0.7
+               -c wal_buffers=16MB
+               -c default_statistics_target=100
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+    tty: true
+    stdin_open: true
+    networks:
+      - postgres
+  
+  pgadmin:
+    container_name: pgadmin_container
+    image: dpage/pgadmin4:7.2
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    ports:
+      - ${PGADMIN_PORT}:80
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 1G
+    networks:
+      - postgres
+
+volumes:
+  pg-data:
+  pgadmin-data:
+
+networks:
+  postgres:
+    driver: bridge

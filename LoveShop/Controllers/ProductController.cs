@@ -1,3 +1,4 @@
+using LoveShop.DTOs;
 using LoveShop.Models;
 using LoveShop.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +17,7 @@ namespace LoveShop.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetProductsAsync(int pageNumber, int pageSize)
+        public async Task<IActionResult> GetProductsAsync(int pageNumber = 0, int pageSize = 20)
         {
             var products = await _productService.GetProductsAsync(pageNumber, pageSize);
             return Ok(products);
@@ -31,8 +32,9 @@ namespace LoveShop.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateProductAsync([FromBody] Product product)
+        public async Task<IActionResult> CreateProductAsync([FromBody] ProductCreateDTO productDTO)
         {
+            var product = productDTO.ToProduct();
             await _productService.CreateProductAsync(product);
             return Created();
         }
