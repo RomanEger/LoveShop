@@ -1,6 +1,7 @@
 using LoveShop.DTOs;
 using LoveShop.Models;
 using LoveShop.Services;
+using LoveShop.Shared;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LoveShop.Controllers
@@ -19,7 +20,11 @@ namespace LoveShop.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Product>>> GetProductsAsync(int pageNumber = 0, int pageSize = 20)
         {
-            var products = await _productService.GetProductsAsync(pageNumber, pageSize);
+            var filter = new Filter<Product>(pageNumber, pageSize);
+            var sort = new Sort<Product, string>(x => x.Name);
+            var cancellationToken = new CancellationToken();
+
+            var products = await _productService.GetProductsAsync(filter, sort, cancellationToken);
             return Ok(products);
         }
 
