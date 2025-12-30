@@ -12,6 +12,8 @@ namespace LoveShop.Models
 
         [Column("is_deleted")]
         public bool IsDeleted { get; init; } = false;
+
+        public byte[] RowVersion { get; set; } = null!;
     }
 
     public abstract class BaseEntityConfiguration<T> : IEntityTypeConfiguration<T> where T : BaseEntity
@@ -20,8 +22,9 @@ namespace LoveShop.Models
         {
             builder.HasKey(e => e.Id);
 
-            builder.Property(e => e.IsDeleted)
-                .HasDefaultValue(false);
+            builder.Property(e => e.IsDeleted).HasDefaultValue(false);
+
+            builder.Property(p => p.RowVersion).IsRowVersion();
         }
     }
 }
