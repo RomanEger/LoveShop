@@ -5,62 +5,60 @@ using System.Text.RegularExpressions;
 
 namespace LoveShop.Models
 {
-    [Table("customers")]
-    public partial record Customer : BaseEntity
-    {
-        [Column("name")]
-        public string Name { get; init; } = null!;
+	[Table("customers")]
+	public partial record Customer : BaseEntity
+	{
+		[Column("name")] public string Name { get; init; } = null!;
 
-        [Column("email")]
-        [EmailAddress]
-        public string Email { get; init; } = null!;
+		[Column("email")] [EmailAddress] public string Email { get; init; } = null!;
 
-        [Column("phone_number")]
-        public string PhoneNumber 
-        { 
-            get;
-            init
-            {
-                var regex = PhoneNumberRegex();
-                if (!regex.IsMatch(value))
-                {
-                    throw new ArgumentException("Incorrect phone number");
-                }
-                field = value;
-            }
-        } = null!;
+		[Column("phone_number")]
+		public string PhoneNumber
+		{
+			get;
+			init
+			{
+				var regex = PhoneNumberRegex();
+				if (!regex.IsMatch(value))
+				{
+					throw new ArgumentException("Incorrect phone number");
+				}
 
-        public ICollection<Cart> Carts { get; init; } = [];
+				field = value;
+			}
+		} = null!;
 
-        public ICollection<Order> Orders { get; init; } = [];
+		public ICollection<Cart> Carts { get; init; } = [];
 
-        [GeneratedRegex("\\d{11}")]
-        private static partial Regex PhoneNumberRegex();
-    }
+		public ICollection<Order> Orders { get; init; } = [];
 
-    public class CustomerConfiguration : BaseEntityConfiguration<Customer>
-    {
-        public override void Configure(EntityTypeBuilder<Customer> builder)
-        {
-            base.Configure(builder);
+		[GeneratedRegex("\\d{11}")]
+		private static partial Regex PhoneNumberRegex();
+	}
 
-            builder.Property(c => c.Name)
-                .IsRequired()
-                .HasMaxLength(200);
+	public class CustomerConfiguration : BaseEntityConfiguration<Customer>
+	{
+		public override void Configure(EntityTypeBuilder<Customer> builder)
+		{
+			base.Configure(builder);
 
-            builder.Property(c => c.Email)
-                .IsRequired()
-                .HasMaxLength(255);
+			builder.Property(c => c.Name)
+				.IsRequired()
+				.HasMaxLength(200);
 
-            builder.Property(c => c.PhoneNumber)
-                .IsRequired()
-                .HasMaxLength(11);
+			builder.Property(c => c.Email)
+				.IsRequired()
+				.HasMaxLength(255);
 
-            builder.HasIndex(c => c.Email)
-                .IsUnique();
+			builder.Property(c => c.PhoneNumber)
+				.IsRequired()
+				.HasMaxLength(11);
 
-            builder.HasIndex(c => c.PhoneNumber)
-                .IsUnique();
-        }
-    }
+			builder.HasIndex(c => c.Email)
+				.IsUnique();
+
+			builder.HasIndex(c => c.PhoneNumber)
+				.IsUnique();
+		}
+	}
 }
