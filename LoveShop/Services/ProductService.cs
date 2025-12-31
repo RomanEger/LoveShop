@@ -21,10 +21,12 @@ namespace LoveShop.Services
 			CancellationToken cancellationToken = default
 		)
 		{
+			var paginatedFilter = filter.PaginatedFilter;
+
 			var query = _loveShopDbContext.Products
 				.AsNoTracking()
-				.Skip(filter.PageNumber * filter.PageSize)
-				.Take(filter.PageSize);
+				.Skip(paginatedFilter.PageNumber * paginatedFilter.PageSize)
+				.Take(paginatedFilter.PageSize);
 
 			query = sort is not null
 				? query.OrderBy(sort.KeySelector)
@@ -36,7 +38,8 @@ namespace LoveShop.Services
 			}
 
 			var items = await query.ToListAsync(cancellationToken);
-			var paginated = new Paginated<Product>(items, filter.PageNumber, filter.PageSize, items.Count);
+			var paginated = new Paginated<Product>(
+				items, paginatedFilter.PageNumber, paginatedFilter.PageSize, items.Count);
 			return paginated;
 		}
 

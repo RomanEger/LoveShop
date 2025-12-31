@@ -20,7 +20,8 @@ namespace LoveShop.Controllers
 		[HttpGet]
 		public async Task<ActionResult<IEnumerable<Product>>> GetProductsAsync(int pageNumber = 0, int pageSize = 20)
 		{
-			var filter = new Filter<Product>(pageNumber, pageSize);
+			var paginatedFiler = new PaginatedFilter<Product>(pageNumber, pageSize);
+			var filter = new Filter<Product>(paginatedFiler);
 			var sort = new Sort<Product, string>(x => x.Name);
 			var cancellationToken = new CancellationToken();
 
@@ -37,7 +38,7 @@ namespace LoveShop.Controllers
 		}
 
 		[HttpPost]
-		public async Task<ActionResult> CreateProductAsync([FromBody] ProductCreateDTO productDTO)
+		public async Task<ActionResult> CreateProductAsync([FromBody] ProductCreateDto productDTO)
 		{
 			var product = productDTO.ToProduct();
 			await _productService.CreateProductAsync(product);

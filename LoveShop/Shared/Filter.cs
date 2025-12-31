@@ -3,8 +3,7 @@ using System.Linq.Expressions;
 namespace LoveShop.Shared
 {
 	public sealed record Filter<T>(
-		int PageNumber,
-		int PageSize,
+		PaginatedFilter<T> PaginatedFilter,
 		Expression<Func<T, bool>>? Condition = null
 	);
 }
