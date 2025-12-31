@@ -2,7 +2,7 @@
 
 namespace LoveShop.DTOs
 {
-	public record ProductCreateDTO(
+	public record ProductCreateDto(
 		string Name,
 		string? Description,
 		decimal Price,
