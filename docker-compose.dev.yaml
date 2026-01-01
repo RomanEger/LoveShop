@@ -52,7 +52,7 @@ services:
     stdin_open: true
     networks:
       - dev_postgres
-  
+
   dev_pgadmin:
     container_name: dev_pgadmin_container
     image: dpage/pgadmin4:7.2
@@ -76,6 +76,7 @@ services:
 volumes:
   dev_pg-data:
   dev_pgadmin-data:
+
 
 networks:
   dev_postgres:
