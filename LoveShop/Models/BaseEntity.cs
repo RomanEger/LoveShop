@@ -12,6 +12,7 @@ namespace LoveShop.Models
 
 		[Column("is_deleted")] public bool IsDeleted { get; init; } = false;
 
+		[Column("row_version")]
 		public byte[] RowVersion { get; set; } = null!;
 	}
 
