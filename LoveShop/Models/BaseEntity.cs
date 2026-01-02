@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LoveShop.Models
 {
-	public abstract record BaseEntity
+	public abstract class BaseEntity
 	{
 		[Column("id")]
 		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]

@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace LoveShop.Models
 {
 	[Table("categories")]
-	public record Category : BaseEntity
+	public class Category : BaseEntity
 	{
 		[Column("name")] public string Name { get; init; } = null!;
 

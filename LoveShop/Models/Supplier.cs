@@ -6,11 +6,11 @@ using System.Text.RegularExpressions;
 namespace LoveShop.Models
 {
 	[Table("suppliers")]
-	public partial record Supplier : BaseEntity
+	public partial class Supplier : BaseEntity
 	{
 		[Column("name")] public string Name { get; init; } = null!;
 
-		[Column("email")] [EmailAddress] public string Email { get; init; } = null!;
+		[Column("email")][EmailAddress] public string Email { get; init; } = null!;
 
 		[Column("phone_number")]
 		public string PhoneNumber

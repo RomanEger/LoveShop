@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace LoveShop.Models
 {
 	[Table("product_categories")]
-	public record ProductCategory : BaseEntity
+	public class ProductCategory : BaseEntity
 	{
 		[Column("product_id")] public Guid ProductId { get; init; }
 

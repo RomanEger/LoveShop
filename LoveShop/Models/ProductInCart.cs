@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace LoveShop.Models
 {
 	[Table("products_in_cart")]
-	public record ProductInCart : BaseEntity
+	public class ProductInCart : BaseEntity
 	{
 		[Column("cart_id")] public Guid CartId { get; init; }
 

@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace LoveShop.Models
 {
 	[Table("orders")]
-	public record Order : BaseEntity
+	public class Order : BaseEntity
 	{
 		[Column("created_at")] public DateTimeOffset CreatedAt { get; init; } = DateTime.UtcNow;
 
