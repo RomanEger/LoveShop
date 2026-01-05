@@ -18,7 +18,7 @@ namespace LoveShop.Controllers
 		}
 
 		[HttpGet]
-		public async Task<ActionResult<IEnumerable<Product>>> GetProductsAsync(int pageNumber = 0, int pageSize = 20)
+		public async Task<ActionResult<IEnumerable<ProductDTO>>> GetProductsAsync(int pageNumber = 0, int pageSize = 20)
 		{
 			var paginatedFiler = new PaginatedFilter<Product>(pageNumber, pageSize);
 			var filter = new Filter<Product>(paginatedFiler);
@@ -30,7 +30,7 @@ namespace LoveShop.Controllers
 		}
 
 		[HttpGet("{id:guid}")]
-		public async Task<ActionResult<Product>> GetProductByIdAsync(Guid id)
+		public async Task<ActionResult<ProductDTO>> GetProductByIdAsync(Guid id)
 		{
 			var product = await _productService.GetProductAsync(x => x.Id == id);
 
@@ -38,10 +38,9 @@ namespace LoveShop.Controllers
 		}
 
 		[HttpPost]
-		public async Task<ActionResult> CreateProductAsync([FromBody] ProductCreateDto productDTO)
+		public async Task<ActionResult> CreateProductAsync([FromBody] ProductCreateDto productDto)
 		{
-			var product = productDTO.ToProduct();
-			await _productService.CreateProductAsync(product);
+			await _productService.CreateProductAsync(productDto);
 			return Created();
 		}
 	}

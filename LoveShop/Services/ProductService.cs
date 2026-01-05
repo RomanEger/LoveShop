@@ -1,4 +1,6 @@
-﻿using LoveShop.Models;
+﻿using LoveShop.DTOs;
+using LoveShop.Extensions;
+using LoveShop.Models;
 using LoveShop.Persistence;
 using LoveShop.Shared;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +17,7 @@ namespace LoveShop.Services
 			_loveShopDbContext = context;
 		}
 
-		public async Task<Paginated<Product>> GetProductsAsync<T>(
+		public async Task<Paginated<ProductDTO>> GetProductsAsync<T>(
 			Filter<Product> filter,
 			Sort<Product, T>? sort = null,
 			CancellationToken cancellationToken = default
@@ -23,40 +25,77 @@ namespace LoveShop.Services
 		{
 			var paginatedFilter = filter.PaginatedFilter;
 
-			var query = _loveShopDbContext.Products
-				.AsNoTracking()
-				.Skip(paginatedFilter.PageNumber * paginatedFilter.PageSize)
-				.Take(paginatedFilter.PageSize);
+			var query = from products in _loveShopDbContext.Products.GetEntitiesAsync(filter, sort)
+						join productCategories in _loveShopDbContext.ProductCategories
+						on products.Id equals productCategories.ProductId
+						select new ProductDTO
+						(
+							products.Id,
+							products.Name,
+							products.Description ?? string.Empty,
+							products.Price,
+							productCategories.CategoryId,
+							products.RowVersion
+						);
+			var items = await query
+				.AsNoTracking().ToListAsync(cancellationToken);
 
-			query = sort is not null
-				? query.OrderBy(sort.KeySelector)
-				: query.OrderBy(p => p.Name);
-
-			if (filter.Condition is not null)
-			{
-				query = query.Where(filter.Condition);
-			}
-
-			var items = await query.ToListAsync(cancellationToken);
-			var paginated = new Paginated<Product>(
+			var paginated = new Paginated<ProductDTO>(
 				items, paginatedFilter.PageNumber, paginatedFilter.PageSize, items.Count);
+
 			return paginated;
 		}
 
-		public async Task<Product?> GetProductAsync(
-			Expression<Func<Product, bool>> condition,
+		public async Task<ProductDTO?> GetProductAsync(
+			Expression<Func<ProductDTO, bool>> condition,
 			CancellationToken cancellationToken = default
 		)
 		{
-			return await _loveShopDbContext.Products
-				.AsNoTracking()
-				.FirstOrDefaultAsync(condition, cancellationToken);
+			var query = from products in _loveShopDbContext.Products
+						join productCategories in _loveShopDbContext.ProductCategories
+						on products.Id equals productCategories.ProductId
+						select new ProductDTO
+						(
+							products.Id,
+							products.Name,
+							products.Description ?? string.Empty,
+							products.Price,
+							productCategories.CategoryId,
+							products.RowVersion
+						);
+			var item = await query.AsNoTracking().Where(condition).SingleOrDefaultAsync(cancellationToken);
+			return item;
 		}
 
-		public async Task CreateProductAsync(Product product, CancellationToken cancellationToken = default)
+		public async Task CreateProductAsync(ProductCreateDto productDto, CancellationToken cancellationToken = default)
 		{
-			await _loveShopDbContext.Products.AddAsync(product, cancellationToken);
-			await _loveShopDbContext.SaveChangesAsync(cancellationToken);
+			var categories = await _loveShopDbContext.Categories
+				.Where(c => productDto.CategoriesIDs.Contains(c.Id))
+				.ToListAsync(cancellationToken: cancellationToken);
+
+			ICollection<ProductCategory> productCategories = [.. categories.Select(c => new ProductCategory { Category = c })];
+
+			var product = new Product
+			{
+				Name = productDto.Name,
+				Description = productDto.Description,
+				Price = productDto.Price,
+				ProductCategories = productCategories
+			};
+
+			await using var transaction = await _loveShopDbContext.Database.BeginTransactionAsync();
+			try
+			{
+				await _loveShopDbContext.Products.AddAsync(product, cancellationToken);
+				await _loveShopDbContext.ProductCategories.AddRangeAsync(productCategories, cancellationToken);
+				await _loveShopDbContext.SaveChangesAsync(cancellationToken);
+				await transaction.CommitAsync(cancellationToken);
+			}
+			catch (Exception exception)
+			{
+				await transaction.RollbackAsync(cancellationToken);
+				throw;
+			}
 		}
 	}
 }
