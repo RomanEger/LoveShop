@@ -1,6 +1,7 @@
 using LoveShop.Persistence;
 using LoveShop.Services;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +10,8 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 builder.Services.AddScoped<ProductService, ProductService>();
+
+builder.Services.AddSerilog();
 
 builder.Services.AddDbContext<LoveShopDbContext>(opt =>
 	opt.UseNpgsql(builder.Configuration.GetConnectionString("Database")));
@@ -31,5 +34,7 @@ using (var scope = app.Services.CreateScope())
 	var dbContext = scope.ServiceProvider.GetRequiredService<LoveShopDbContext>();
 	dbContext.Database.Migrate();
 }
+
+app.UseSerilogRequestLogging();
 
 app.Run();
