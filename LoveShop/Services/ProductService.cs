@@ -10,11 +10,13 @@ namespace LoveShop.Services
 {
 	public class ProductService
 	{
+		private readonly ILogger<ProductService> _logger;
 		private readonly LoveShopDbContext _loveShopDbContext;
 
-		public ProductService(LoveShopDbContext context)
+		public ProductService(LoveShopDbContext context, ILogger<ProductService> logger)
 		{
 			_loveShopDbContext = context;
+			_logger = logger;
 		}
 
 		public async Task<Paginated<ProductDTO>> GetProductsAsync<T>(
@@ -93,6 +95,7 @@ namespace LoveShop.Services
 			}
 			catch (Exception exception)
 			{
+				_logger.LogError(exception, "Error occured while creating product: {ErrorMessage}", exception.Message);
 				await transaction.RollbackAsync(cancellationToken);
 				throw;
 			}
