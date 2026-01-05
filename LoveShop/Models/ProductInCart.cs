@@ -7,15 +7,15 @@ namespace LoveShop.Models
 	[Table("products_in_cart")]
 	public class ProductInCart : BaseEntity
 	{
-		[Column("cart_id")] public Guid CartId { get; init; }
+		[Column("cart_id")] public Guid CartId { get; set; }
 
-		[Column("product_id")] public Guid ProductId { get; init; }
+		[Column("product_id")] public Guid ProductId { get; set; }
 
-		[Column("quantity")] public int Quantity { get; init; } = 1;
+		[Column("quantity")] public int Quantity { get; set; } = 1;
 
-		public Cart Cart { get; init; } = null!;
+		public Cart Cart { get; set; } = null!;
 
-		public Product Product { get; init; } = null!;
+		public Product Product { get; set; } = null!;
 	}
 
 	public class ProductInCartConfiguration : BaseEntityConfiguration<ProductInCart>

@@ -7,13 +7,13 @@ namespace LoveShop.Models
 	[Table("categories")]
 	public class Category : BaseEntity
 	{
-		[Column("name")] public string Name { get; init; } = null!;
+		[Column("name")] public string Name { get; set; } = null!;
 
 		[Column("parent_category_id")]
 		public Guid? ParentCategoryId
 		{
 			get;
-			init
+			set
 			{
 				if (value == Id)
 				{
@@ -27,7 +27,7 @@ namespace LoveShop.Models
 		public Category? ParentCategory
 		{
 			get;
-			init
+			set
 			{
 				if (value == this)
 				{
@@ -40,7 +40,7 @@ namespace LoveShop.Models
 
 		public ICollection<Category> ChildCategories { get; init; } = [];
 
-		public ICollection<ProductCategory> ProductCategories { get; set; } = [];
+		public ICollection<ProductCategory> ProductCategories { get; init; } = [];
 	}
 
 	public class CategoryConfiguration : BaseEntityConfiguration<Category>

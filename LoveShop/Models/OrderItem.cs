@@ -7,17 +7,17 @@ namespace LoveShop.Models
 	[Table("order_items")]
 	public class OrderItem : BaseEntity
 	{
-		[Column("order_id")] public Guid OrderId { get; init; }
+		[Column("order_id")] public Guid OrderId { get; set; }
 
-		[Column("product_id")] public Guid ProductId { get; init; }
+		[Column("product_id")] public Guid ProductId { get; set; }
 
-		[Column("quantity")] public int Quantity { get; init; } = 1;
+		[Column("quantity")] public int Quantity { get; set; } = 1;
 
-		[Column("unit_price")] public decimal UnitPrice { get; init; }
+		[Column("unit_price")] public decimal UnitPrice { get; set; }
 
-		public Order Order { get; init; } = null!;
+		public Order Order { get; set; } = null!;
 
-		public Product Product { get; init; } = null!;
+		public Product Product { get; set; } = null!;
 	}
 
 	public class OrderItemConfiguration : BaseEntityConfiguration<OrderItem>

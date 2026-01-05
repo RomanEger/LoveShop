@@ -10,7 +10,7 @@ namespace LoveShop.Models
 		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 		public Guid Id { get; init; }
 
-		[Column("is_deleted")] public bool IsDeleted { get; init; } = false;
+		[Column("is_deleted")] public bool IsDeleted { get; set; } = false;
 
 		[Column("row_version")]
 		public byte[] RowVersion { get; set; } = null!;

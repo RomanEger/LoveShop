@@ -1,6 +1,4 @@
-﻿using LoveShop.Models;
-
-namespace LoveShop.DTOs
+﻿namespace LoveShop.DTOs
 {
 	public record ProductCreateDto(
 		string Name,

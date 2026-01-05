@@ -9,17 +9,17 @@ namespace LoveShop.Models
 	{
 		[Column("created_at")] public DateTimeOffset CreatedAt { get; init; } = DateTime.UtcNow;
 
-		[Column("completed_at")] public DateTimeOffset? CompletedAt { get; init; }
+		[Column("completed_at")] public DateTimeOffset? CompletedAt { get; set; }
 
-		[Column("customer_id")] public Guid CustomerId { get; init; }
+		[Column("customer_id")] public Guid CustomerId { get; set; }
 
-		[Column("supplier_id")] public Guid SupplierId { get; init; }
+		[Column("supplier_id")] public Guid SupplierId { get; set; }
 
-		[Column("is_active")] public bool IsActive { get; init; } = true;
+		[Column("is_active")] public bool IsActive { get; set; } = true;
 
-		public Customer Customer { get; init; } = null!;
+		public Customer Customer { get; set; } = null!;
 
-		public Supplier Supplier { get; init; } = null!;
+		public Supplier Supplier { get; set; } = null!;
 
 		public ICollection<OrderItem> OrderItems { get; init; } = [];
 	}

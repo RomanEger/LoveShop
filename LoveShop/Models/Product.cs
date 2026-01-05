@@ -7,16 +7,11 @@ namespace LoveShop.Models
 	[Table("products")]
 	public class Product : BaseEntity
 	{
-		[Column("name")] public string Name { get; init; } = null!;
+		[Column("name")] public string Name { get; set; } = null!;
 
-		[Column("description")] public string? Description { get; init; }
+		[Column("description")] public string? Description { get; set; }
 
-		[Column("price")]
-		public decimal Price
-		{
-			get;
-			init;
-		}
+		[Column("price")] public decimal Price { get; set; }
 
 		[NotMapped] public ICollection<Guid> ProductCategoriesIDs { get; init; } = [];
 

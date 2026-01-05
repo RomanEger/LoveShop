@@ -7,13 +7,13 @@ namespace LoveShop.Models
 	[Table("product_categories")]
 	public class ProductCategory : BaseEntity
 	{
-		[Column("product_id")] public Guid ProductId { get; init; }
+		[Column("product_id")] public Guid ProductId { get; set; }
 
-		[Column("category_id")] public Guid CategoryId { get; init; }
+		[Column("category_id")] public Guid CategoryId { get; set; }
 
-		public Product Product { get; init; } = null!;
+		public Product Product { get; set; } = null!;
 
-		public Category Category { get; init; } = null!;
+		public Category Category { get; set; } = null!;
 	}
 
 	public class ProductCategoryConfiguration : BaseEntityConfiguration<ProductCategory>

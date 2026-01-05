@@ -8,9 +8,9 @@ namespace LoveShop.Models
 	[Table("suppliers")]
 	public partial class Supplier : BaseEntity
 	{
-		[Column("name")] public string Name { get; init; } = null!;
+		[Column("name")] public string Name { get; set; } = null!;
 
-		[Column("email")][EmailAddress] public string Email { get; init; } = null!;
+		[Column("email")] [EmailAddress] public string Email { get; set; } = null!;
 
 		[Column("phone_number")]
 		public string PhoneNumber

@@ -7,9 +7,9 @@ namespace LoveShop.Models
 	[Table("carts")]
 	public class Cart : BaseEntity
 	{
-		[Column("customer_id")] public Guid CustomerId { get; init; }
+		[Column("customer_id")] public Guid CustomerId { get; set; }
 
-		public Customer Customer { get; init; } = null!;
+		public Customer Customer { get; set; } = null!;
 
 		public ICollection<ProductInCart> ProductsInCart { get; init; } = [];
 	}
