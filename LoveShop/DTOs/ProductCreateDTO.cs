@@ -1,9 +1,8 @@
 ﻿namespace LoveShop.DTOs
 {
-	public record ProductCreateDto(
+	public record ProductCreateDTO(
 		string Name,
 		string? Description,
 		decimal Price,
-		ICollection<Guid> CategoriesIDs
-	);
+		ICollection<Guid> CategoriesIDs);
 }

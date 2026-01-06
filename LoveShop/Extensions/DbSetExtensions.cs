@@ -9,8 +9,7 @@ namespace LoveShop.Extensions
 		{
 			public IQueryable<TEntity> GetEntitiesAsync<TK>(
 				Filter<TEntity> filter,
-				Sort<TEntity, TK>? sort = null
-			)
+				Sort<TEntity, TK>? sort = null)
 			{
 				var paginatedFilter = filter.PaginatedFilter;
 

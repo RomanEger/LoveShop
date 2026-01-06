@@ -6,8 +6,7 @@ namespace LoveShop.Extensions
 	{
 		public static IQueryable<TEntity> Paginate<TEntity>(
 			this IQueryable<TEntity> source,
-			PaginatedFilter<TEntity> paginatedFilter
-		)
+			PaginatedFilter<TEntity> paginatedFilter)
 		{
 			return source
 				.Skip(paginatedFilter.PageNumber * paginatedFilter.PageSize)

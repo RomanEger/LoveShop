@@ -2,6 +2,5 @@
 {
 	public sealed record PaginatedFilter<T>(
 		int PageNumber,
-		int PageSize
-	);
+		int PageSize);
 }

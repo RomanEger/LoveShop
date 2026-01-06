@@ -4,6 +4,5 @@ namespace LoveShop.Shared
 		IReadOnlyList<T> Items,
 		int Page,
 		int Size,
-		int Total
-	);
+		int Total);
 }

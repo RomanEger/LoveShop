@@ -22,23 +22,20 @@ namespace LoveShop.Services
 		public async Task<Paginated<ProductDTO>> GetProductsAsync<T>(
 			Filter<Product> filter,
 			Sort<Product, T>? sort = null,
-			CancellationToken cancellationToken = default
-		)
+			CancellationToken cancellationToken = default)
 		{
 			var paginatedFilter = filter.PaginatedFilter;
 
 			var query = from products in _loveShopDbContext.Products.GetEntitiesAsync(filter, sort)
 						join productCategories in _loveShopDbContext.ProductCategories
 						on products.Id equals productCategories.ProductId
-						select new ProductDTO
-						(
+						select new ProductDTO(
 							products.Id,
 							products.Name,
 							products.Description ?? string.Empty,
 							products.Price,
 							productCategories.CategoryId,
-							products.RowVersion
-						);
+							products.RowVersion);
 			var items = await query
 				.AsNoTracking().ToListAsync(cancellationToken);
 
@@ -50,26 +47,25 @@ namespace LoveShop.Services
 
 		public async Task<ProductDTO?> GetProductAsync(
 			Expression<Func<ProductDTO, bool>> condition,
-			CancellationToken cancellationToken = default
-		)
+			CancellationToken cancellationToken = default)
 		{
 			var query = from products in _loveShopDbContext.Products
 						join productCategories in _loveShopDbContext.ProductCategories
 						on products.Id equals productCategories.ProductId
-						select new ProductDTO
-						(
+						select new ProductDTO(
 							products.Id,
 							products.Name,
 							products.Description ?? string.Empty,
 							products.Price,
 							productCategories.CategoryId,
-							products.RowVersion
-						);
+							products.RowVersion);
 			var item = await query.AsNoTracking().Where(condition).SingleOrDefaultAsync(cancellationToken);
 			return item;
 		}
 
-		public async Task CreateProductAsync(ProductCreateDto productDto, CancellationToken cancellationToken = default)
+		public async Task CreateProductAsync(
+			ProductCreateDTO productDto,
+			CancellationToken cancellationToken = default)
 		{
 			var categories = await _loveShopDbContext.Categories
 				.Where(c => productDto.CategoriesIDs.Contains(c.Id))
@@ -85,7 +81,7 @@ namespace LoveShop.Services
 				ProductCategories = productCategories
 			};
 
-			await using var transaction = await _loveShopDbContext.Database.BeginTransactionAsync();
+			await using var transaction = await _loveShopDbContext.Database.BeginTransactionAsync(cancellationToken);
 			try
 			{
 				await _loveShopDbContext.Products.AddAsync(product, cancellationToken);
