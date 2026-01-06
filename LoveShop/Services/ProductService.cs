@@ -1,4 +1,4 @@
-﻿using LoveShop.DTOs;
+﻿using LoveShop.DTOs.Product;
 using LoveShop.Extensions;
 using LoveShop.Models;
 using LoveShop.Persistence;
@@ -64,20 +64,20 @@ namespace LoveShop.Services
 		}
 
 		public async Task CreateProductAsync(
-			ProductCreateDTO productDto,
+			ProductCreateDTO productDTO,
 			CancellationToken cancellationToken = default)
 		{
 			var categories = await _loveShopDbContext.Categories
-				.Where(c => productDto.CategoriesIDs.Contains(c.Id))
+				.Where(c => productDTO.CategoriesIDs.Contains(c.Id))
 				.ToListAsync(cancellationToken: cancellationToken);
 
 			ICollection<ProductCategory> productCategories = [.. categories.Select(c => new ProductCategory { Category = c })];
 
 			var product = new Product
 			{
-				Name = productDto.Name,
-				Description = productDto.Description,
-				Price = productDto.Price,
+				Name = productDTO.Name,
+				Description = productDTO.Description,
+				Price = productDTO.Price,
 				ProductCategories = productCategories
 			};
 

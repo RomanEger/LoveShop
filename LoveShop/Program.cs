@@ -11,6 +11,8 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddScoped<ProductService, ProductService>();
 
+builder.Services.AddScoped<CategoryService, CategoryService>();
+
 builder.Services.AddSerilog();
 
 builder.Services.AddDbContext<LoveShopDbContext>(opt =>

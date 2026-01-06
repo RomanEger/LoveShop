@@ -1,4 +1,4 @@
-using LoveShop.DTOs;
+using LoveShop.DTOs.Product;
 using LoveShop.Models;
 using LoveShop.Services;
 using LoveShop.Shared;
@@ -43,10 +43,10 @@ namespace LoveShop.Controllers
 
 		[HttpPost]
 		public async Task<ActionResult> CreateProductAsync(
-			[FromBody] ProductCreateDTO productDto,
+			[FromBody] ProductCreateDTO productDTO,
 			CancellationToken cancellationToken = default)
 		{
-			await _productService.CreateProductAsync(productDto, cancellationToken);
+			await _productService.CreateProductAsync(productDTO, cancellationToken);
 			return Created();
 		}
 	}

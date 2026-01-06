@@ -1,4 +1,4 @@
-namespace LoveShop.DTOs
+namespace LoveShop.DTOs.Product
 {
 	public sealed record ProductDTO(
 		Guid Id,

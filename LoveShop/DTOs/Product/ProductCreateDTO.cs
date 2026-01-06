@@ -1,6 +1,6 @@
-﻿namespace LoveShop.DTOs
+﻿namespace LoveShop.DTOs.Product
 {
-	public record ProductCreateDTO(
+	public sealed record ProductCreateDTO(
 		string Name,
 		string? Description,
 		decimal Price,
