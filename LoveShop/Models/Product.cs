@@ -13,12 +13,6 @@ namespace LoveShop.Models
 
 		[Column("price")] public decimal Price { get; set; }
 
-		[NotMapped] public ICollection<Guid> ProductCategoriesIDs { get; init; } = [];
-
-		[NotMapped] public ICollection<Guid> ProductInCartsIDs { get; init; } = [];
-
-		[NotMapped] public ICollection<Guid> OrderItemsIDs { get; init; } = [];
-
 		public ICollection<ProductCategory> ProductCategories { get; init; } = [];
 
 		public ICollection<ProductInCart> ProductInCarts { get; init; } = [];
