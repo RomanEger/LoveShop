@@ -26,18 +26,17 @@ namespace LoveShop.Services
 		{
 			var paginatedFilter = filter.PaginatedFilter;
 
-			var query = from products in _loveShopDbContext.Products.GetEntitiesAsync(filter, sort)
-						join productCategories in _loveShopDbContext.ProductCategories
-						on products.Id equals productCategories.ProductId
-						select new ProductDTO(
-							products.Id,
-							products.Name,
-							products.Description ?? string.Empty,
-							products.Price,
-							productCategories.CategoryId,
-							products.RowVersion);
-			var items = await query
-				.AsNoTracking().ToListAsync(cancellationToken);
+			var query = _loveShopDbContext.Products.GetEntitiesAsync(filter, sort)
+				.Include(p => p.ProductCategories)
+				.Select(p => new ProductDTO(
+					p.Id,
+					p.Name,
+					p.Description ?? string.Empty,
+					p.Price,
+					p.ProductCategories.Select(pc => pc.CategoryId).ToArray(),
+					p.RowVersion));
+
+			var items = await query.ToListAsync(cancellationToken);
 
 			var paginated = new Paginated<ProductDTO>(
 				items, paginatedFilter.PageNumber, paginatedFilter.PageSize, items.Count);
@@ -57,7 +56,7 @@ namespace LoveShop.Services
 							products.Name,
 							products.Description ?? string.Empty,
 							products.Price,
-							productCategories.CategoryId,
+							new List<Guid>(),
 							products.RowVersion);
 			var item = await query.AsNoTracking().Where(condition).SingleOrDefaultAsync(cancellationToken);
 			return item;

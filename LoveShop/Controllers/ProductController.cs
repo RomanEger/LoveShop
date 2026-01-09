@@ -47,6 +47,7 @@ namespace LoveShop.Controllers
 			CancellationToken cancellationToken = default)
 		{
 			await _productService.CreateProductAsync(productDTO, cancellationToken);
+
 			return Created();
 		}
 	}

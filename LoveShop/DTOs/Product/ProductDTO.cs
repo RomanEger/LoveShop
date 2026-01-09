@@ -5,6 +5,6 @@ namespace LoveShop.DTOs.Product
 		string Name,
 		string Description,
 		decimal Price,
-		Guid CategoryId,
+		ICollection<Guid> CategoriesIds,
 		byte[] RowVersion);
 }
