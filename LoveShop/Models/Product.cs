@@ -31,7 +31,7 @@ namespace LoveShop.Models
 				.HasMaxLength(200);
 
 			builder.Property(p => p.Description)
-				.HasColumnType("text");
+				.HasMaxLength(1000);
 
 			builder.Property(p => p.Price)
 				.HasColumnType("decimal(12,2)")
