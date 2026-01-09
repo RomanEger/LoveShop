@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using LoveShop.DTOs.Category;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -41,6 +42,15 @@ namespace LoveShop.Models
 		public ICollection<Category> ChildCategories { get; init; } = [];
 
 		public ICollection<ProductCategory> ProductCategories { get; init; } = [];
+
+		public CategoryDTO ToDTO()
+		{
+			return new CategoryDTO(
+				Id,
+				Name,
+				ParentCategoryId,
+				ChildCategories.Select(childCategory => childCategory.Id).ToArray());
+		}
 	}
 
 	public class CategoryConfiguration : BaseEntityConfiguration<Category>

@@ -23,11 +23,7 @@ namespace LoveShop.Services
 			CancellationToken cancellationToken = default)
 		{
 			var query = _loveShopDbContext.Categories.GetEntitiesAsync(filter, sort)
-				.Select(category => new CategoryDTO(
-					category.Id,
-					category.Name,
-					category.ParentCategoryId,
-					category.ChildCategories.Select(childCategory => childCategory.Id).ToArray()))
+				.Select(category => category.ToDTO())
 				.AsNoTracking();
 
 			var items = await query.ToListAsync(cancellationToken);
@@ -39,21 +35,18 @@ namespace LoveShop.Services
 		}
 
 		public async Task<CategoryDTO?> GetCategoryAsync(
-			Expression<Func<CategoryDTO, bool>> condition,
+			Expression<Func<Category, bool>> condition,
 			CancellationToken cancellationToken = default)
 		{
 			var item = await _loveShopDbContext.Categories
 				.AsNoTracking()
-				.Select(category => new CategoryDTO(
-					category.Id,
-					category.Name,
-					category.ParentCategoryId,
-					category.ChildCategories.Select(childCategory => childCategory.Id).ToArray()))
-				.FirstOrDefaultAsync(condition, cancellationToken);
+				.Where(condition)
+				.Select(category => category.ToDTO())
+				.SingleOrDefaultAsync(cancellationToken);
 			return item;
 		}
 
-		public async Task CreateCategoryAsync(
+		public async Task<CategoryDTO> CreateCategoryAsync(
 			CategoryCreateDTO categoryCreateDTO,
 			CancellationToken cancellationToken = default)
 		{
@@ -67,6 +60,8 @@ namespace LoveShop.Services
 
 			await _loveShopDbContext.Categories.AddAsync(category, cancellationToken);
 			await _loveShopDbContext.SaveChangesAsync(cancellationToken);
+
+			return category.ToDTO();
 		}
 
 		public async Task<CategoryDTO?> UpdateCategoryAsync(
@@ -86,15 +81,29 @@ namespace LoveShop.Services
 
 			await _loveShopDbContext.SaveChangesAsync(cancellationToken);
 
-			var childCategories = category.ChildCategories.Select(c => c.Id).ToArray();
-
-			var categoryDTO = new CategoryDTO(
-				category.Id,
-				category.Name,
-				category.ParentCategoryId,
-				childCategories);
+			var categoryDTO = category.ToDTO();
 
 			return categoryDTO;
+		}
+
+		public async Task DeleteAsync(
+			Category deleteEntity,
+			CancellationToken cancellationToken = default)
+		{
+			_loveShopDbContext.Categories.Remove(deleteEntity);
+			await _loveShopDbContext.SaveChangesAsync(cancellationToken);
+		}
+
+		public async Task DeleteAsync(
+			Expression<Func<Category, bool>> condition,
+			CancellationToken cancellationToken = default)
+		{
+			var item = await _loveShopDbContext.Categories
+				.SingleOrDefaultAsync(condition, cancellationToken);
+			if (item is not null)
+			{
+				await DeleteAsync(item, cancellationToken);
+			}
 		}
 	}
 }

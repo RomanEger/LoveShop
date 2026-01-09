@@ -47,7 +47,28 @@ namespace LoveShop.Controllers
 			CancellationToken cancellationToken = default)
 		{
 			await _categoryService.CreateCategoryAsync(categoryCreateDTO, cancellationToken);
+
 			return Created();
+		}
+
+		[HttpPut]
+		public async Task<ActionResult> UpdateCategoryAsync(
+			[FromBody] CategoryUpdateDTO categoryUpdateDTO,
+			CancellationToken cancellationToken = default)
+		{
+			var updatedCategory = await _categoryService.UpdateCategoryAsync(categoryUpdateDTO, cancellationToken);
+
+			return Ok(updatedCategory);
+		}
+
+		[HttpDelete("{id:guid}")]
+		public async Task<ActionResult> DeleteCategoryAsync(
+			Guid id,
+			CancellationToken cancellationToken = default)
+		{
+			await _categoryService.DeleteAsync(category => category.Id == id, cancellationToken);
+
+			return Ok();
 		}
 	}
 }
