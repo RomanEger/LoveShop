@@ -1,6 +1,6 @@
 ﻿using LoveShop.DTOs.Category;
 using LoveShop.Models;
-using LoveShop.Services;
+using LoveShop.Services.Contracts;
 using LoveShop.Shared;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,9 +10,11 @@ namespace LoveShop.Controllers
 	[Route("api/[controller]")]
 	public class CategoryController : ControllerBase
 	{
-		private readonly CategoryService _categoryService;
+		private readonly IGenericCrudService<Category, CategoryDTO, CategoryCreateDTO, CategoryUpdateDTO>
+			_categoryService;
 
-		public CategoryController(CategoryService categoryService)
+		public CategoryController(
+			IGenericCrudService<Category, CategoryDTO, CategoryCreateDTO, CategoryUpdateDTO> categoryService)
 		{
 			_categoryService = categoryService;
 		}
@@ -27,7 +29,7 @@ namespace LoveShop.Controllers
 			var filter = new Filter<Category>(paginatedFiler);
 			var sort = new Sort<Category, string>(x => x.Name);
 
-			var categories = await _categoryService.GetCategoriesAsync(filter, sort, cancellationToken);
+			var categories = await _categoryService.GetAsync(filter, sort, cancellationToken);
 			return Ok(categories);
 		}
 
@@ -36,7 +38,7 @@ namespace LoveShop.Controllers
 			Guid id,
 			CancellationToken cancellationToken = default)
 		{
-			var category = await _categoryService.GetCategoryAsync(x => x.Id == id, cancellationToken);
+			var category = await _categoryService.FindAsync(x => x.Id == id, cancellationToken);
 
 			return category is null ? NotFound() : Ok(category);
 		}
@@ -46,7 +48,7 @@ namespace LoveShop.Controllers
 			[FromBody] CategoryCreateDTO categoryCreateDTO,
 			CancellationToken cancellationToken = default)
 		{
-			await _categoryService.CreateCategoryAsync(categoryCreateDTO, cancellationToken);
+			await _categoryService.CreateAsync(categoryCreateDTO, cancellationToken);
 
 			return Created();
 		}
@@ -56,7 +58,7 @@ namespace LoveShop.Controllers
 			[FromBody] CategoryUpdateDTO categoryUpdateDTO,
 			CancellationToken cancellationToken = default)
 		{
-			var updatedCategory = await _categoryService.UpdateCategoryAsync(categoryUpdateDTO, cancellationToken);
+			var updatedCategory = await _categoryService.UpdateAsync(categoryUpdateDTO, cancellationToken);
 
 			return Ok(updatedCategory);
 		}

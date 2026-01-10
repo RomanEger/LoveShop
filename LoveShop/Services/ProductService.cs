@@ -2,13 +2,14 @@
 using LoveShop.Extensions;
 using LoveShop.Models;
 using LoveShop.Persistence;
+using LoveShop.Services.Contracts;
 using LoveShop.Shared;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace LoveShop.Services
 {
-	public class ProductService
+	public class ProductService : IGenericCrudService<Product, ProductDTO, ProductCreateDTO, ProductUpdateDTO>
 	{
 		private readonly ILogger<ProductService> _logger;
 		private readonly LoveShopDbContext _loveShopDbContext;
@@ -19,7 +20,7 @@ namespace LoveShop.Services
 			_logger = logger;
 		}
 
-		public async Task<Paginated<ProductDTO>> GetProductsAsync<T>(
+		public async Task<Paginated<ProductDTO>> GetAsync<T>(
 			Filter<Product> filter,
 			Sort<Product, T>? sort = null,
 			CancellationToken cancellationToken = default)
@@ -27,14 +28,8 @@ namespace LoveShop.Services
 			var paginatedFilter = filter.PaginatedFilter;
 
 			var query = _loveShopDbContext.Products.GetEntitiesAsync(filter, sort)
-				.Include(p => p.ProductCategories)
-				.Select(p => new ProductDTO(
-					p.Id,
-					p.Name,
-					p.Description ?? string.Empty,
-					p.Price,
-					p.ProductCategories.Select(pc => pc.CategoryId).ToArray(),
-					p.RowVersion));
+				.Include(product => product.ProductCategories)
+				.Select(product => product.ToDTO());
 
 			var items = await query.ToListAsync(cancellationToken);
 
@@ -44,25 +39,21 @@ namespace LoveShop.Services
 			return paginated;
 		}
 
-		public async Task<ProductDTO?> GetProductAsync(
-			Expression<Func<ProductDTO, bool>> condition,
+		public async Task<ProductDTO?> FindAsync(
+			Expression<Func<Product, bool>> condition,
 			CancellationToken cancellationToken = default)
 		{
-			var query = from products in _loveShopDbContext.Products
-						join productCategories in _loveShopDbContext.ProductCategories
-						on products.Id equals productCategories.ProductId
-						select new ProductDTO(
-							products.Id,
-							products.Name,
-							products.Description ?? string.Empty,
-							products.Price,
-							new List<Guid>(),
-							products.RowVersion);
-			var item = await query.AsNoTracking().Where(condition).SingleOrDefaultAsync(cancellationToken);
+			var query = _loveShopDbContext.Products
+				.Include(product => product.ProductCategories)
+				.Where(condition)
+				.Select(product => product.ToDTO());
+
+			var item = await query.SingleOrDefaultAsync(cancellationToken);
+
 			return item;
 		}
 
-		public async Task CreateProductAsync(
+		public async Task<ProductDTO> CreateAsync(
 			ProductCreateDTO productDTO,
 			CancellationToken cancellationToken = default)
 		{
@@ -94,6 +85,24 @@ namespace LoveShop.Services
 				await transaction.RollbackAsync(cancellationToken);
 				throw;
 			}
+
+			return product.ToDTO();
+		}
+
+		public Task<ProductDTO?> UpdateAsync(ProductUpdateDTO updateDto, CancellationToken cancellationToken = default)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task DeleteAsync(Product deleteEntity, CancellationToken cancellationToken = default)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task DeleteAsync(Expression<Func<Product, bool>> condition,
+			CancellationToken cancellationToken = default)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

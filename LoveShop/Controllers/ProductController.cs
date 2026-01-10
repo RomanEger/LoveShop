@@ -1,6 +1,6 @@
 using LoveShop.DTOs.Product;
 using LoveShop.Models;
-using LoveShop.Services;
+using LoveShop.Services.Contracts;
 using LoveShop.Shared;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,9 +10,10 @@ namespace LoveShop.Controllers
 	[Route("api/[controller]")]
 	public class ProductController : ControllerBase
 	{
-		private readonly ProductService _productService;
+		private readonly IGenericCrudService<Product, ProductDTO, ProductCreateDTO, ProductUpdateDTO> _productService;
 
-		public ProductController(ProductService productService)
+		public ProductController(
+			IGenericCrudService<Product, ProductDTO, ProductCreateDTO, ProductUpdateDTO> productService)
 		{
 			_productService = productService;
 		}
@@ -27,7 +28,7 @@ namespace LoveShop.Controllers
 			var filter = new Filter<Product>(paginatedFiler);
 			var sort = new Sort<Product, string>(x => x.Name);
 
-			var products = await _productService.GetProductsAsync(filter, sort, cancellationToken);
+			var products = await _productService.GetAsync(filter, sort, cancellationToken);
 			return Ok(products);
 		}
 
@@ -36,7 +37,7 @@ namespace LoveShop.Controllers
 			Guid id,
 			CancellationToken cancellationToken = default)
 		{
-			var product = await _productService.GetProductAsync(x => x.Id == id, cancellationToken);
+			var product = await _productService.FindAsync(x => x.Id == id, cancellationToken);
 
 			return product is null ? NotFound() : Ok(product);
 		}
@@ -46,9 +47,29 @@ namespace LoveShop.Controllers
 			[FromBody] ProductCreateDTO productDTO,
 			CancellationToken cancellationToken = default)
 		{
-			await _productService.CreateProductAsync(productDTO, cancellationToken);
+			await _productService.CreateAsync(productDTO, cancellationToken);
 
 			return Created();
+		}
+
+		[HttpPut]
+		public async Task<ActionResult> UpdateCategoryAsync(
+			[FromBody] ProductUpdateDTO productUpdateDTO,
+			CancellationToken cancellationToken = default)
+		{
+			var updatedCategory = await _productService.UpdateAsync(productUpdateDTO, cancellationToken);
+
+			return Ok(updatedCategory);
+		}
+
+		[HttpDelete("{id:guid}")]
+		public async Task<ActionResult> DeleteCategoryAsync(
+			Guid id,
+			CancellationToken cancellationToken = default)
+		{
+			await _productService.DeleteAsync(product => product.Id == id, cancellationToken);
+
+			return Ok();
 		}
 	}
 }

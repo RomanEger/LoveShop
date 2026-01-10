@@ -2,13 +2,14 @@
 using LoveShop.Extensions;
 using LoveShop.Models;
 using LoveShop.Persistence;
+using LoveShop.Services.Contracts;
 using LoveShop.Shared;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace LoveShop.Services
 {
-	public class CategoryService
+	public class CategoryService : IGenericCrudService<Category, CategoryDTO, CategoryCreateDTO, CategoryUpdateDTO>
 	{
 		private readonly LoveShopDbContext _loveShopDbContext;
 
@@ -17,7 +18,7 @@ namespace LoveShop.Services
 			_loveShopDbContext = loveShopDbContext;
 		}
 
-		public async Task<Paginated<CategoryDTO>> GetCategoriesAsync<T>(
+		public async Task<Paginated<CategoryDTO>> GetAsync<T>(
 			Filter<Category> filter,
 			Sort<Category, T>? sort = null,
 			CancellationToken cancellationToken = default)
@@ -34,7 +35,7 @@ namespace LoveShop.Services
 			return paginated;
 		}
 
-		public async Task<CategoryDTO?> GetCategoryAsync(
+		public async Task<CategoryDTO?> FindAsync(
 			Expression<Func<Category, bool>> condition,
 			CancellationToken cancellationToken = default)
 		{
@@ -46,7 +47,7 @@ namespace LoveShop.Services
 			return item;
 		}
 
-		public async Task<CategoryDTO> CreateCategoryAsync(
+		public async Task<CategoryDTO> CreateAsync(
 			CategoryCreateDTO categoryCreateDTO,
 			CancellationToken cancellationToken = default)
 		{
@@ -64,7 +65,7 @@ namespace LoveShop.Services
 			return category.ToDTO();
 		}
 
-		public async Task<CategoryDTO?> UpdateCategoryAsync(
+		public async Task<CategoryDTO?> UpdateAsync(
 			CategoryUpdateDTO categoryUpdateDTO,
 			CancellationToken cancellationToken = default)
 		{
