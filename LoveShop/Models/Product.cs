@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using LoveShop.DTOs.Product;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -18,6 +19,17 @@ namespace LoveShop.Models
 		public ICollection<ProductInCart> ProductInCarts { get; init; } = [];
 
 		public ICollection<OrderItem> OrderItems { get; init; } = [];
+
+		public ProductDTO ToDTO()
+		{
+			return new ProductDTO(
+				Id,
+				Name,
+				Description ?? string.Empty,
+				Price,
+				ProductCategories.Select(pc => pc.CategoryId).ToArray(),
+				RowVersion);
+		}
 	}
 
 	public class ProductConfiguration : BaseEntityConfiguration<Product>
