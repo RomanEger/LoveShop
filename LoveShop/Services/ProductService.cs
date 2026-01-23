@@ -29,7 +29,13 @@ namespace LoveShop.Services
 
 			var query = _loveShopDbContext.Products.GetEntitiesAsync(filter, sort)
 				.Include(product => product.ProductCategories)
-				.Select(product => product.ToDTO());
+				.Select(product => new ProductDTO(
+					product.Id,
+					product.Name,
+					product.Description ?? string.Empty,
+					product.Price,
+					product.ProductCategories.Select(pc => pc.CategoryId).ToArray(),
+					product.RowVersion));
 
 			var items = await query.ToListAsync(cancellationToken);
 
@@ -63,13 +69,11 @@ namespace LoveShop.Services
 
 			ICollection<ProductCategory> productCategories = [.. categories.Select(c => new ProductCategory { Category = c })];
 
-			var product = new Product
-			{
-				Name = productDTO.Name,
-				Description = productDTO.Description,
-				Price = productDTO.Price,
-				ProductCategories = productCategories
-			};
+			var product = Product.Create(
+				productDTO.Name,
+				productDTO.Description ?? string.Empty,
+				productDTO.Price,
+				productCategories);
 
 			await using var transaction = await _loveShopDbContext.Database.BeginTransactionAsync(cancellationToken);
 			try
@@ -89,9 +93,62 @@ namespace LoveShop.Services
 			return product.ToDTO();
 		}
 
-		public Task<ProductDTO?> UpdateAsync(ProductUpdateDTO updateDto, CancellationToken cancellationToken = default)
+		public async Task<ProductDTO?> UpdateAsync(
+			ProductUpdateDTO updateDto,
+			CancellationToken cancellationToken = default)
 		{
-			throw new NotImplementedException();
+			var product = await _loveShopDbContext.Products
+				.Include(product => product.ProductCategories)
+				.SingleOrDefaultAsync(product => product.Id == updateDto.Id, cancellationToken);
+			if (product is null)
+			{
+				return null;
+			}
+
+			var requestedCategoryIds = updateDto.CategoriesIds
+				.Distinct()
+				.ToArray();
+
+			var existingCategoryIds = await _loveShopDbContext.Categories
+				.Where(c => requestedCategoryIds.Contains(c.Id))
+				.Select(c => c.Id)
+				.ToArrayAsync(cancellationToken);
+
+			if (existingCategoryIds.Length != requestedCategoryIds.Length)
+			{
+				return null;
+			}
+
+			var productCategoriesIds = product.ProductCategories.Select(x => x.CategoryId).ToHashSet();
+
+			var addedCategoriesIds = requestedCategoryIds.Except(productCategoriesIds);
+
+			var removedCategoriesIds = productCategoriesIds.Except(requestedCategoryIds);
+			var removedCategories = product.ProductCategories
+				.Where(productCategory => removedCategoriesIds.Contains(productCategory.CategoryId))
+				.ToArray();
+
+			product.Name = updateDto.Name;
+			product.Description = updateDto.Description;
+			product.Price = updateDto.Price;
+			_loveShopDbContext.Entry(product)
+				.Property(p => p.RowVersion)
+				.OriginalValue = updateDto.RowVersion;
+
+			foreach (var productCategory in addedCategoriesIds
+				         .Select(categoryId => new ProductCategory { ProductId = product.Id, CategoryId = categoryId }))
+			{
+				product.ProductCategories.Add(productCategory);
+			}
+
+			foreach (var removedCategory in removedCategories)
+			{
+				product.ProductCategories.Remove(removedCategory);
+			}
+
+			await _loveShopDbContext.SaveChangesAsync(cancellationToken);
+
+			return product.ToDTO();
 		}
 
 		public Task DeleteAsync(Product deleteEntity, CancellationToken cancellationToken = default)

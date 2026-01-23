@@ -6,6 +6,11 @@ namespace LoveShop.Models
 {
 	public abstract class BaseEntity
 	{
+		protected BaseEntity()
+		{
+			RowVersion = new byte[20];
+		}
+
 		[Column("id")]
 		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 		public Guid Id { get; init; }
