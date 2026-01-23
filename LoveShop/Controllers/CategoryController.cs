@@ -2,10 +2,12 @@
 using LoveShop.Models;
 using LoveShop.Services.Contracts;
 using LoveShop.Shared;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LoveShop.Controllers
 {
+	[Authorize]
 	[ApiController]
 	[Route("api/[controller]")]
 	public class CategoryController : ControllerBase

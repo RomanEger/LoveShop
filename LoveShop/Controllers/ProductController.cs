@@ -2,12 +2,14 @@ using LoveShop.DTOs.Product;
 using LoveShop.Models;
 using LoveShop.Services.Contracts;
 using LoveShop.Shared;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LoveShop.Controllers
 {
 	[ApiController]
 	[Route("api/[controller]")]
+	[Authorize]
 	public class ProductController : ControllerBase
 	{
 		private readonly IGenericCrudService<Product, ProductDTO, ProductCreateDTO, ProductUpdateDTO> _productService;
