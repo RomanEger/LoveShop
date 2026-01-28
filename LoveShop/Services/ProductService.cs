@@ -151,15 +151,21 @@ namespace LoveShop.Services
 			return product.ToDTO();
 		}
 
-		public Task DeleteAsync(Product deleteEntity, CancellationToken cancellationToken = default)
+		public async Task DeleteAsync(Product deleteEntity, CancellationToken cancellationToken = default)
 		{
-			throw new NotImplementedException();
+			_loveShopDbContext.Products.Remove(deleteEntity);
+			await _loveShopDbContext.SaveChangesAsync(cancellationToken);
 		}
 
-		public Task DeleteAsync(Expression<Func<Product, bool>> condition,
+		public async Task DeleteAsync(Expression<Func<Product, bool>> condition,
 			CancellationToken cancellationToken = default)
 		{
-			throw new NotImplementedException();
+			var deleteEntity = await _loveShopDbContext.Products
+				.SingleOrDefaultAsync(condition, cancellationToken);
+			if (deleteEntity is not null)
+			{
+				await DeleteAsync(deleteEntity, cancellationToken);
+			}
 		}
 	}
 }
