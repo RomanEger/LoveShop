@@ -69,11 +69,13 @@ namespace LoveShop.Services
 
 			ICollection<ProductCategory> productCategories = [.. categories.Select(c => new ProductCategory { Category = c })];
 
-			var product = Product.Create(
-				productDTO.Name,
-				productDTO.Description ?? string.Empty,
-				productDTO.Price,
-				productCategories);
+			var product = new Product
+			{
+				Name = productDTO.Name,
+				Description = productDTO.Description ?? string.Empty,
+				Price = productDTO.Price,
+				ProductCategories = productCategories
+			};
 
 			await using var transaction = await _loveShopDbContext.Database.BeginTransactionAsync(cancellationToken);
 			try

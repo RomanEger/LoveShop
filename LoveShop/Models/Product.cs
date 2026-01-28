@@ -8,42 +8,17 @@ namespace LoveShop.Models
 	[Table("products")]
 	public class Product : BaseEntity
 	{
-		private Product(
-			string name,
-			string description,
-			decimal price,
-			ICollection<ProductCategory>? productCategories = null,
-			ICollection<ProductInCart>? productInCarts = null,
-			ICollection<OrderItem>? orderItems = null)
-		{
-			Name = name;
-			Description = description;
-			Price = price;
-			ProductCategories = productCategories ?? [];
-			ProductInCarts = productInCarts ?? [];
-			OrderItems = orderItems ?? [];
-		}
-
-		public static Product Create(
-			string name,
-			string description,
-			decimal price,
-			ICollection<ProductCategory>? productCategories = null)
-		{
-			return new Product(name, description, price, productCategories);
-		}
-
-		[Column("name")] public string Name { get; set; }
+		[Column("name")] public string Name { get; set; } = null!;
 
 		[Column("description")] public string? Description { get; set; }
 
 		[Column("price")] public decimal Price { get; set; }
 
-		public ICollection<ProductCategory> ProductCategories { get; init; }
+		public ICollection<ProductCategory> ProductCategories { get; init; } = [];
 
-		public ICollection<ProductInCart> ProductInCarts { get; init; }
+		public ICollection<ProductInCart> ProductInCarts { get; init; } = [];
 
-		public ICollection<OrderItem> OrderItems { get; init; }
+		public ICollection<OrderItem> OrderItems { get; init; } = [];
 
 		public ProductDTO ToDTO()
 		{
